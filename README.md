@@ -18,6 +18,7 @@ Ex:<br>
 After construction it needs to be provided an audio file to play either through `sound_init` or `set_sound`.
 * `set_sound` takes a char* for a file name. It defaults to playing immediately and not looping. 
 * `sound_init` takes a char* for a file name, a boolean for whether the sound file should loop, and a boolean for whether the sound file should start playing immediately.
+
 `ga_audio_components` also implement several relatively self-explanatory functions<br>
 * `set_looping` takes a boolean which will set whether the file will loop.
 * `play` plays the current sound clip.
