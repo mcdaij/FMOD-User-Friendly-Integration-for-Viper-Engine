@@ -16,6 +16,7 @@
 
 #include "entity/ga_entity.h"
 #include "entity/ga_lua_component.h"
+#include "entity/ga_audio_component.h"
 
 #include "graphics/ga_cube_component.h"
 #include "graphics/ga_program.h"
@@ -32,11 +33,17 @@
 #include <unistd.h>
 #endif
 
+
+#include <iostream>
+#include "framework/ga_audio_system.h"
+
 ga_font* g_font = nullptr;
 static void set_root_path(const char* exepath);
 
 int main(int argc, const char** argv)
 {
+	ga_audio_system* audio_system = ga_audio_system::get_instance();
+
 	set_root_path(argv[0]);
 
 	ga_job::startup(0xffff, 256, 256);
@@ -57,16 +64,43 @@ int main(int argc, const char** argv)
 	rotation.make_axis_angle(ga_vec3f::x_vector(), ga_degrees_to_radians(15.0f));
 	camera->rotate(rotation);
 
-	// Create an entity whose movement is driven by Lua script.
-	ga_entity lua;
-	lua.translate({ 0.0f, 2.0f, 1.0f });
-	ga_lua_component lua_move(&lua, "data/scripts/move.lua");
-	ga_cube_component lua_model(&lua, "data/textures/rpi.png");
-	sim->add_entity(&lua);
+	//Create some demo cubes!
+	ga_entity kick_entity;
+	ga_audio_component kick_aud(&kick_entity, audio_system, GA_SPATIAL);
+	ga_cube_component kick_cube(&kick_entity, "data/textures/rpi.png");
+
+	ga_entity bass_entity;
+	ga_audio_component bass_aud(&bass_entity, audio_system, GA_SPATIAL);
+	ga_cube_component bass_cube(&bass_entity, "data/textures/rpi.png");
+
+	ga_entity lead_entity;
+	ga_audio_component lead_aud(&lead_entity, audio_system, GA_SPATIAL);
+	ga_cube_component lead_cube(&lead_entity, "data/textures/rpi.png");
+
+	kick_aud.sound_init("data/FMOD/kick.aiff", true, true);
+	lead_aud.sound_init("data/FMOD/main.wav", true, true);
+	bass_aud.sound_init("data/FMOD/base.wav", true, true);
+	kick_aud.get_entity()->translate({ -7.5,7,20 });
+	lead_aud.get_entity()->translate({ -7.5,7,20 });
+	bass_aud.get_entity()->translate({ -7.5,7,20 });
+
+	ga_quatf axis_angle;
+	axis_angle.make_axis_angle(ga_vec3f::y_vector(), ga_degrees_to_radians(45) * 2);
+	lead_aud.get_entity()->rotate(axis_angle);
+	lead_aud.get_entity()->translate({ 7.5,0,7.5 });
+
+	axis_angle.make_axis_angle(ga_vec3f::y_vector(), ga_degrees_to_radians(45) * 4);
+	bass_aud.get_entity()->rotate(axis_angle);
+	bass_aud.get_entity()->translate({ 14,0,0 });
+	
+	sim->add_entity(&kick_entity);
+	sim->add_entity(&bass_entity);
+	sim->add_entity(&lead_entity);
 
 	// Main loop:
 	while (true)
 	{
+		
 		// We pass frame state through the 3 phases using a params object.
 		ga_frame_params params;
 
@@ -81,6 +115,9 @@ int main(int argc, const char** argv)
 
 		// Run gameplay.
 		sim->update(&params);
+
+		//Update audio system accordingly
+		audio_system->update(&params);
 
 		// Perform the late update.
 		sim->late_update(&params);

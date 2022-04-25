@@ -15,6 +15,8 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
+#include <iostream>
+
 ga_cube_component::ga_cube_component(ga_entity* ent, const char* texture_file) : ga_component(ent)
 {
 	_material = new ga_unlit_texture_material(texture_file);
@@ -176,11 +178,23 @@ ga_cube_component::~ga_cube_component()
 
 void ga_cube_component::update(ga_frame_params* params)
 {
+	/*ga_vec3f camera_pos = params->_view.get_translation();*/
+	float dist = .1f;
 	float dt = std::chrono::duration_cast<std::chrono::duration<float>>(params->_delta_time).count();
 	ga_quatf axis_angle;
-	axis_angle.make_axis_angle(ga_vec3f::y_vector(), ga_degrees_to_radians(60.0f) * dt);
+	axis_angle.make_axis_angle(ga_vec3f::y_vector(), ga_degrees_to_radians(45) * dt);
 	get_entity()->rotate(axis_angle);
-
+	get_entity()->translate(get_entity()->get_transform().get_forward().scale_result(dist));
+	ga_vec3f current_translation = get_entity()->get_transform().get_translation();
+	//std::cout << current_translation.x<<" " << current_translation.y << " " << current_translation.z<<std::endl;
+	/*ga_vec3f translation = { camera_pos.x + 3, camera_pos.y, camera_pos.z };
+	ga_mat4f old_transform = get_entity()->get_transform();
+	old_transform.set_translation(params->_view.get_translation());
+	
+	get_entity()->translate(params->_view.get_translation() - get_entity()->get_transform().get_translation());
+	current_translation = get_entity()->get_transform().get_translation();
+	std::cout << current_translation.x << current_translation.y << current_translation.z << std::endl;*/
+	
 	ga_static_drawcall draw;
 	draw._name = "ga_cube_component";
 	draw._vao = _vao;
