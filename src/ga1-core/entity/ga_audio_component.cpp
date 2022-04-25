@@ -23,7 +23,7 @@ void ga_audio_component::update(ga_frame_params* params)
 {
 	if (_channel)
 	{
-		ga_entity* entity = get_entity();
+		ga_entity* entity = get_entity();//handle positioning
 		_channel->set3DAttributes((FMOD_VECTOR*)&entity->get_transform(), new FMOD_VECTOR({ 0,0,0 }));
 	}
 }

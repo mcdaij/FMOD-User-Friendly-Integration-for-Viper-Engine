@@ -13,15 +13,23 @@ void ga_audio_system::ERRCHECK_fn(FMOD_RESULT result, const char* file, int line
 }
 
 
-ga_audio_system::ga_audio_system() {
+ga_audio_system::ga_audio_system() 
+{
 	FMOD::System_Create(&_system);
 	FMOD_RESULT result;
 	result = _system->init(32, FMOD_INIT_3D_RIGHTHANDED, 0);
     ERRCHECK(result);
 }
 
+ga_audio_system::~ga_audio_system() 
+{
+	_system->close();
+	_system->release();
+}
+
 void ga_audio_system::update(ga_frame_params* params)
 {
+	//3d audio based on viewpoint position
 	_system->set3DListenerAttributes(0, (FMOD_VECTOR*)&params->_view.get_translation(), new FMOD_VECTOR({ 0.0f,0.0f,0.0f }), (FMOD_VECTOR*)&params->_view.get_forward(), (FMOD_VECTOR*)&params->_view.get_up());
 	_system->update();
 }

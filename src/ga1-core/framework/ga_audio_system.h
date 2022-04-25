@@ -7,7 +7,7 @@
 enum GA_SOUND_TYPE
 {
 	GA_BASIC = FMOD_DEFAULT,//UI and other non-spatial sounds
-	GA_SPATIAL = FMOD_3D
+	GA_SPATIAL = FMOD_3D,	//Spatial audio
 };
 
 
@@ -20,10 +20,15 @@ public:
 		static ga_audio_system instance;
 		return &instance;
 	}
+
+	//handle update
 	void update(ga_frame_params* params);
 
+	//Handle runtime
 	void pause(FMOD::Channel** channel);
 	void play(FMOD::Channel** channel);
+
+	//Handle init
 	void set_looping(FMOD::Sound** sound, bool loop);
 	void set_file(FMOD::Sound** sound, FMOD::Channel** channel, char* file, GA_SOUND_TYPE type);
 
