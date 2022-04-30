@@ -1,4 +1,4 @@
-# RPI Final Project Repository
+# Game Architecture Final Project Repository
 
   * build - Files to generate a build of the engine.
   * src - GA engine framework, FMOD libraries, and integration code.
